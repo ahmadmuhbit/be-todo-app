@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 )
 
@@ -26,7 +27,16 @@ func BootApp() {
 	config.RunMigration()
 
 	app := fiber.New()
-	route.NewRouter(app)
+	app.Use(cors.New(cors.Config{
+		Next:             nil,
+		AllowOrigins:     config.AllowOrigins,
+		AllowMethods:     config.AllowMethods,
+		AllowHeaders:     config.AllowHeaders,
+		AllowCredentials: config.AllowCredentials,
+		ExposeHeaders:    config.ExposeHeaders,
+		MaxAge:           config.MaxAge,
+	}))
 
+	route.NewRouter(app)
 	app.Listen(config.PORT)
 }
